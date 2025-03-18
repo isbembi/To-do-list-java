@@ -1,6 +1,7 @@
 package kg.alatoo.todolist.controllers;
 
 
+import jakarta.validation.Valid;
 import kg.alatoo.todolist.entities.Task;
 import kg.alatoo.todolist.services.TaskService;
 import org.apache.coyote.Response;
@@ -38,10 +39,15 @@ public class TaskController {
     }
 
     @PostMapping("/user/{userId}")
-    public ResponseEntity<Task> createTask(@PathVariable Long userId, @RequestBody Task task) {
-        Task createdTask = taskService.createTask(task, userId);
-        return ResponseEntity.ok(createdTask);
+    public ResponseEntity<Task> createTask(@RequestBody @Valid Task task, @PathVariable Long userId) {
+        try {
+            Task newTask = taskService.createTask(task, userId);
+            return ResponseEntity.ok(newTask);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
     }
+
 
     // Обновить задачу
     @PutMapping("/{taskId}")

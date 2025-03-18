@@ -1,6 +1,10 @@
 package kg.alatoo.todolist.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -10,15 +14,22 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message="Header cannot be empty")
     @Column(nullable=false, unique=true)
     private String title;
 
+    @NotBlank(message = "The description cannot be empty")
     @Column(nullable=false)
     private String description;
 
+    @NotNull(message="Completed field cannot be empty")
     @Column(nullable=false)
     private boolean completed;
 
+
+
+    @NotNull(message = "Deadline mast be filled")
+    @FutureOrPresent(message = "Should deadline be in the past or in the future")
     @Column(nullable=false)
     private LocalDateTime deadline;
 

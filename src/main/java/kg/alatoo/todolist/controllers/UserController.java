@@ -1,5 +1,6 @@
 package kg.alatoo.todolist.controllers;
 
+import jakarta.validation.Valid;
 import kg.alatoo.todolist.entities.User;
 import kg.alatoo.todolist.services.UserService;
 import org.springframework.http.ResponseEntity;
@@ -38,11 +39,10 @@ public class UserController {
         return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Создать нового пользователя
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        User createdUser = userService.createUser(user);
-        return ResponseEntity.ok(createdUser);
+    public ResponseEntity<User> createUser(@RequestBody @Valid User user) {
+        User newUser = userService.createUser(user);
+        return ResponseEntity.ok(newUser);
     }
 
     // Удалить пользователя

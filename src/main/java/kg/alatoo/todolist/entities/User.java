@@ -1,6 +1,10 @@
 package kg.alatoo.todolist.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 import java.util.List;
 
 @Entity
@@ -20,9 +24,14 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
+    @NotBlank(message="The name cannot be empty ")
+    @Size(min=2, max=50, message = "Name should consist from 2 to 50 chars ")
     @Column(nullable=false, unique=true)
     private String name;
 
+    @NotBlank(message = "Email не может быть пустым")
+    @Email(message = "Некорректный email")
     @Column(nullable=false, unique=true)
     private String email;
 
