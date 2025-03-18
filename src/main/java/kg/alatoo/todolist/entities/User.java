@@ -7,6 +7,15 @@ import java.util.List;
 @Table(name="users")
 public class User {
 
+    public  User(){}
+
+    public User(Long id, String name, String email, List<Task> tasks) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.tasks = tasks;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,6 +28,10 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> tasks;
+
+
+
+
 
     // Явные сеттеры (на случай, если Lombok не работает)
     public void setName(String name) { this.name = name; }
