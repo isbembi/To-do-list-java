@@ -1,53 +1,52 @@
 package kg.alatoo.todolist.controllers;
 
-import jakarta.validation.Valid;
+import kg.alatoo.todolist.dto.UserDTO;
 import kg.alatoo.todolist.entities.User;
+import kg.alatoo.todolist.mappers.UserMapper;
 import kg.alatoo.todolist.services.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;
+    private final UserMapper userMapper;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserMapper userMapper) {
         this.userService = userService;
+        this.userMapper = userMapper;
     }
 
-    // Получить всех пользователей
     @GetMapping
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    public List<UserDTO> getAllUsers() {
+        return userService.getAllUsers().stream()
+                .map(userMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
-    // Получить пользователя по ID
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
         Optional<User> user = userService.getUserById(id);
-        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    // Найти пользователя по email
-    @GetMapping("/email/{email}")
-    public ResponseEntity<User> getUserByEmail(@PathVariable String email) {
-        Optional<User> user = userService.getUserByEmail(email);
-        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return user.map(u -> ResponseEntity.ok(userMapper.toDTO(u)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody @Valid User user) {
+    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
+        User user = userMapper.toEntity(userDTO);
         User newUser = userService.createUser(user);
-        return ResponseEntity.ok(newUser);
+        return ResponseEntity.ok(userMapper.toDTO(newUser));
     }
 
-    // Удалить пользователя
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<UserDTO> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }

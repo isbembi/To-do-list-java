@@ -5,6 +5,7 @@ import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -31,7 +32,7 @@ public class Task {
     @NotNull(message = "Deadline mast be filled")
     @FutureOrPresent(message = "Should deadline be in the past or in the future")
     @Column(nullable=false)
-    private LocalDateTime deadline;
+    private LocalDate deadline;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -39,7 +40,7 @@ public class Task {
 
     public Task() {}
 
-    public Task(Long id, String title, String description, boolean completed, LocalDateTime deadline, User user) {
+    public Task(Long id, String title, String description, boolean completed, LocalDate deadline, User user) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -52,12 +53,19 @@ public class Task {
     public void setTitle(String title) { this.title = title; }
     public void setDescription(String description) { this.description = description; }
     public void setCompleted(boolean completed) { this.completed = completed; }
-    public void setDeadline(LocalDateTime deadline) { this.deadline = deadline; }
+    public void setDeadline(LocalDate deadline) { this.deadline = deadline; }
     public void setUser(User user) { this.user = user; }
 
     public String getTitle() { return title; }
     public String getDescription() { return description; }
     public boolean isCompleted() { return completed; }
-    public LocalDateTime getDeadline() { return deadline; }
+    public LocalDate getDeadline() { return deadline; }
     public User getUser() { return user; }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+    public Long getId() {
+        return id;
+    }
 }

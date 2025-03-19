@@ -1,72 +1,79 @@
 package kg.alatoo.todolist.controllers;
 
-
-import jakarta.validation.Valid;
+import kg.alatoo.todolist.dto.TaskDTO;
 import kg.alatoo.todolist.entities.Task;
+import kg.alatoo.todolist.mappers.TaskMapper;
 import kg.alatoo.todolist.services.TaskService;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/tasks")
 public class TaskController {
 
-
     private final TaskService taskService;
+    private final TaskMapper taskMapper;
 
-    public TaskController(final TaskService taskService) {
+    public TaskController(TaskService taskService, TaskMapper taskMapper) {
         this.taskService = taskService;
+        this.taskMapper = taskMapper;
     }
 
     @GetMapping
-    public List<Task> getAllTasks() {
-        return taskService.getAllTasks();
+    public List<TaskDTO> getAllTasks() {
+        return taskService.getAllTasks().stream()
+                .map(taskMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Task> getTaskById(@PathVariable Long id) {
+    public ResponseEntity<TaskDTO> getTaskById(@PathVariable Long id) {
         Optional<Task> task = taskService.getTaskById(id);
-        return task.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return task.map(t -> ResponseEntity.ok(taskMapper.toDTO(t)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping("/user/{userId}")
-    public List<Task> getTasksByUserId(@PathVariable Long userId) {
-        return taskService.getTasksByUserId(userId);
+    public List<TaskDTO> getTasksByUserId(@PathVariable Long userId) {
+        return taskService.getTasksByUserId(userId).stream()
+                .map(taskMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     @PostMapping("/user/{userId}")
-    public ResponseEntity<Task> createTask(@RequestBody @Valid Task task, @PathVariable Long userId) {
-        try {
-            Task newTask = taskService.createTask(task, userId);
-            return ResponseEntity.ok(newTask);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(null);
-        }
+    public ResponseEntity<TaskDTO> createTask(@RequestBody TaskDTO taskDTO, @PathVariable Long userId) {
+        Task task = taskMapper.toEntity(taskDTO);
+        Task newTask = taskService.createTask(task, userId);
+        return ResponseEntity.ok(taskMapper.toDTO(newTask));
     }
 
-
-    // Обновить задачу
-    @PutMapping("/{taskId}")
-    public ResponseEntity<Task> updateTask(@PathVariable Long taskId, @RequestBody Task task) {
-        try {
-            Task updatedTask = taskService.updateTask(taskId, task);
-            return ResponseEntity.ok(updatedTask);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+    @PutMapping("/{id}")
+    public ResponseEntity<TaskDTO> updateTask(@PathVariable Long id, @RequestBody TaskDTO taskDTO) {
+        Task task = taskMapper.toEntity(taskDTO);
+        Task updatedTask = taskService.updateTask(id, task);
+        return ResponseEntity.ok(taskMapper.toDTO(updatedTask));
     }
 
+    @PatchMapping("/{id}/complete")
+    public ResponseEntity<TaskDTO> markTaskAsCompleted(@PathVariable Long id) {
+        Task updatedTask = taskService.markTaskAsCompleted(id);
+        return ResponseEntity.ok(taskMapper.toDTO(updatedTask));
+    }
+
+    @PatchMapping("/{id}/incomplete")
+    public ResponseEntity<TaskDTO> markTaskAsIncomplete(@PathVariable Long id) {
+        Task updatedTask = taskService.markTaskAsIncomplete(id);
+        return ResponseEntity.ok(taskMapper.toDTO(updatedTask));
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
         taskService.deleteTask(id);
         return ResponseEntity.noContent().build();
     }
-
-
 
 }

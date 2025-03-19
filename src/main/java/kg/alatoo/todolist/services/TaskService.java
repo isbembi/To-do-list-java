@@ -57,4 +57,23 @@ public class TaskService {
         taskRepository.deleteById(id);
     }
 
+    public Task markTaskAsCompleted(Long taskId) {
+        return taskRepository.findById(taskId)
+                .map(task -> {
+                    task.setCompleted(true);
+                    return taskRepository.save(task);
+                })
+                .orElseThrow(() -> new RuntimeException("Task not found with id: " + taskId));
+    }
+
+
+    public Task markTaskAsIncomplete(Long taskId) {
+        return taskRepository.findById(taskId)
+                .map(task -> {
+                    task.setCompleted(false);
+                    return taskRepository.save(task);
+                })
+                .orElseThrow(() -> new RuntimeException("Task not found with id: " + taskId));
+    }
+
 }

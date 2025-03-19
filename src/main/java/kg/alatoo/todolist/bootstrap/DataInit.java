@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Component
@@ -37,7 +38,7 @@ public class DataInit implements CommandLineRunner {
         task1.setTitle("Complete Back-end project");
         task1.setDescription("Finish the to-do list application");
         task1.setCompleted(false);
-        task1.setDeadline(LocalDateTime.now().plusDays(3));
+        task1.setDeadline(LocalDate.now().plusDays(3));
         task1.setUser(user1);
         taskRepository.save(task1);
 
@@ -45,7 +46,7 @@ public class DataInit implements CommandLineRunner {
         task2.setTitle("Study for History exam");
         task2.setDescription("prepare for the test <<Ishak Razakov>>");
         task2.setCompleted(false);
-        task2.setDeadline(LocalDateTime.now().plusDays(5));
+        task2.setDeadline(LocalDate.now().plusDays(5));
         task2.setUser(user2);
         taskRepository.save(task2);
 
