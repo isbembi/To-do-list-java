@@ -17,7 +17,7 @@ class UserMapperTest {
     void setUp() {
         userMapper = new UserMapper();
 
-        user = new User(1L, "Alice", "alice@example.com", null);
+        user = new User(1L, "Alice", "alice@example.com", null, "test123");
         userDTO = new UserDTO(1L, "Alice", "alice@example.com");
     }
 

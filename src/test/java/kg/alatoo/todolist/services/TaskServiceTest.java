@@ -36,7 +36,7 @@ class TaskServiceTest {
 
     @BeforeEach
     void setUp() {
-        user = new User(1L, "Alice", "alice@example.com", null);
+        user = new User(1L, "Alice", "alice@example.com", null, "test123");
         task = new Task(1L, "Тестовая задача", "Описание задачи", false, LocalDate.now().plusDays(1), user);
     }
 

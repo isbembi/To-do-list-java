@@ -16,11 +16,12 @@ public class User {
 
     public  User(){}
 
-    public User(Long id, String name, String email, List<Task> tasks) {
+    public User(Long id, String name, String email, List<Task> tasks, String password ) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.tasks = tasks;
+        this.password = password;
     }
 
     @Id
@@ -57,7 +58,7 @@ public class User {
     public void setEmail(String email) { this.email = email; }
     public void setId(Long id) {this.id = id;}
     public void setRole(Role role) {this.role = role;}
-    private void setPassword(String password) {this.password= password;}
+    public void setPassword(String password) {this.password= password;}
 
 
     public Long getId() { return id; }

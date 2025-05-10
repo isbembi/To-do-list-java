@@ -33,7 +33,7 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp() {
-        user = new User(1L, "Alice", "alice@example.com", null);
+        user = new User(1L, "Alice", "alice@example.com", null, "test123");
         userDTO = new UserDTO(1L, "Alice", "alice@example.com");
     }
 

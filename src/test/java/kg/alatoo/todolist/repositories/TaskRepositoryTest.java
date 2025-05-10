@@ -27,7 +27,7 @@ class TaskRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        user = new User(null, "Alice", "alice@example.com", null);
+        user = new User(null, "Alice", "alice@example.com", null,"test123");
         user = userRepository.save(user);
 
         task = new Task(null, "Тестовая задача", "Описание", false, LocalDate.now().plusDays(1), user);
