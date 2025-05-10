@@ -5,6 +5,7 @@ import kg.alatoo.todolist.dto.AuthResponse;
 import kg.alatoo.todolist.dto.RegisterRequest;
 import kg.alatoo.todolist.entities.Role;
 import kg.alatoo.todolist.entities.User;
+import kg.alatoo.todolist.entities.RefreshToken;
 import kg.alatoo.todolist.repositories.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,15 +19,18 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final RefreshTokenService refreshTokenService;
 
     public AuthenticationService(UserRepository userRepository,
                                  PasswordEncoder passwordEncoder,
                                  JwtService jwtService,
-                                 AuthenticationManager authenticationManager) {
+                                 AuthenticationManager authenticationManager,
+                                 RefreshTokenService refreshTokenService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
+        this.refreshTokenService = refreshTokenService;
     }
 
     public AuthResponse register(RegisterRequest request) {
@@ -37,9 +41,11 @@ public class AuthenticationService {
         user.setRole(Role.USER);
 
         userRepository.save(user);
-        String jwtToken = jwtService.generateToken(user);
 
-        return new AuthResponse(jwtToken);
+        String accessToken = jwtService.generateToken(user);
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
+
+        return new AuthResponse(accessToken, refreshToken.getToken());
     }
 
     public AuthResponse authenticate(AuthRequest request) {
@@ -52,8 +58,10 @@ public class AuthenticationService {
 
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
-        String jwtToken = jwtService.generateToken(user);
 
-        return new AuthResponse(jwtToken);
+        String accessToken = jwtService.generateToken(user);
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
+
+        return new AuthResponse(accessToken, refreshToken.getToken());
     }
 }
