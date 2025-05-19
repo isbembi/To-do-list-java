@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-import java.util.Optional;
 
 @Component
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
@@ -49,16 +48,17 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             return;
         }
 
+        // 💡 Создаем пользователя, если не найден
         User user = userRepository.findByEmail(email).orElseGet(() -> {
             User newUser = new User();
             newUser.setEmail(email);
             newUser.setName(name != null ? name : email.split("@")[0]);
             newUser.setRole(Role.USER);
-            newUser.setPassword(""); // пароль не используется
+            newUser.setPassword(""); // OAuth-пользователи не имеют пароля
             return userRepository.save(newUser);
         });
 
-        // Удаляем старый refresh токен, если он был
+        // Удаляем старый refresh токен, если был
         refreshTokenService.deleteByUser(user);
 
         String accessToken = jwtService.generateToken(user);
@@ -73,4 +73,5 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
         response.setContentType("application/json");
         new ObjectMapper().writeValue(response.getWriter(), tokens);
     }
+
 }
