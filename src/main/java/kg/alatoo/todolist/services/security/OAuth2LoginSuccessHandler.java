@@ -54,7 +54,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             newUser.setEmail(email);
             newUser.setName(name != null ? name : email.split("@")[0]);
             newUser.setRole(Role.USER);
-            newUser.setPassword(""); // OAuth-пользователи не имеют пароля
+            newUser.setPassword("");
             return userRepository.save(newUser);
         });
 
